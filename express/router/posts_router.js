@@ -50,5 +50,38 @@ router.post("/", async (req, res) => {
     }
 })
 
+router.delete("/:id", async (req,res) => {
+    const { id } = req.params;
+    try {
+        const removedPost = await db.remove(id)
+        if (removedPost) {
+            res.status(200).json({ message: "The post has been removed"})
+        } else {
+            res.status(404).json({ message: "the post could not be removed"})
+        }
+    } catch (err) {
+        res.status(500).json({ error: "The post could not be removed. OOPS"})
+    }
+})
+
+router.put("/:id", async (req,res) => {
+    const { id } = req.params
+    const {title, contents } = req.body;
+    try {
+        if (title && contents) {
+            const updatedPost = await db.update(id, req.body)
+            if (updatedPost) {
+                res.status(200).json(updatedPost)
+            } else {
+                res.status(404).json({ message: 'please provide the title and contents of the post'})
+            }
+        }
+    } catch (err) {
+        res
+            .status(500)
+            .json({ error: "The post info could not be changed"})
+    }
+})
+
 
 module.exports = router;
